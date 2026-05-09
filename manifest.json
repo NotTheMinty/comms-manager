@@ -1,0 +1,18 @@
+{
+  "name": "Minty's Commission Tracker",
+  "short_name": "Commissions",
+  "description": "Track art commissions and requests",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f0faf5",
+  "theme_color": "#a8e6cf",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23a8e6cf'/%3E%3Cellipse cx='242' cy='268' rx='155' ry='148' fill='white' stroke='%23c8f0de' stroke-width='5'/%3E%3Cellipse cx='320' cy='340' rx='38' ry='34' fill='%23a8e6cf'/%3E%3Ccircle cx='175' cy='220' r='26' fill='%23ff8fa3'/%3E%3Ccircle cx='230' cy='175' r='26' fill='%23ffd77a'/%3E%3Ccircle cx='290' cy='168' r='26' fill='%23a8e6cf'/%3E%3Ccircle cx='338' cy='208' r='26' fill='%23c9b8f5'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

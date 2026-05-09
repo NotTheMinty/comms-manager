@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#a8e6cf">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Commissions">
+<title>Minty's Commission Tracker 🐉</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mint: #a8e6cf;
+    --mint-dark: #5cb88a;
+    --mint-light: #d4f5e9;
+    --pink: #ffb3c6;
+    --pink-dark: #e07090;
+    --lavender: #c9b8f5;
+    --cream: #fff9f0;
+    --soft-bg: #f0faf5;
+    --card-bg: #ffffff;
+    --text: #2d3748;
+    --text-light: #718096;
+    --border: #e2e8f0;
+    --shadow: 0 4px 20px rgba(90,180,140,0.13);
+    --shadow-hover: 0 8px 32px rgba(90,180,140,0.22);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--soft-bg);
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(168,230,207,0.35) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(255,179,198,0.25) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(201,184,245,0.15) 0%, transparent 60%);
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--mint) 0%, #b8f0d8 50%, var(--pink) 100%);
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 24px rgba(90,180,140,0.18);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '🐉';
+    position: absolute;
+    font-size: 6rem;
+    opacity: 0.08;
+    right: 2rem;
+    top: -1rem;
+    transform: rotate(-15deg);
+    pointer-events: none;
+  }
+
+  .header-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #1a4a35;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .header-title span { font-size: 1.5rem; }
+
+  .header-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    background: rgba(255,255,255,0.6);
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 999px;
+    padding: 0.35rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1a4a35;
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+  }
+
+  .controls {
+    padding: 1.5rem 2.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    background: rgba(255,255,255,0.5);
+    border-bottom: 2px dashed var(--mint);
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mint-dark);
+  }
+
+  select, input[type="text"], input[type="date"] {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border: 2px solid var(--mint);
+    border-radius: 999px;
+    background: white;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  select:focus, input:focus {
+    border-color: var(--mint-dark);
+    box-shadow: 0 0 0 3px rgba(92,184,138,0.15);
+  }
+
+  .btn {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    padding: 0.45rem 1.2rem;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--mint-dark), #3da876);
+    color: white;
+    box-shadow: 0 3px 10px rgba(61,168,118,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(61,168,118,0.4);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #ff8fa3, #e05070);
+    color: white;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.8rem;
+  }
+
+  .btn-danger:hover { transform: translateY(-1px); opacity: 0.9; }
+
+  .btn-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.7rem;
+    font-weight: 700;
+  }
+
+  .ml-auto { margin-left: auto; }
+
+  /* GRID */
+  .grid {
+    padding: 2rem 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 1.4rem;
+    box-shadow: var(--shadow);
+    border: 2px solid transparent;
+    transition: all 0.22s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+    overflow: hidden;
+    animation: cardIn 0.35s cubic-bezier(.34,1.56,.64,1) both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card:hover {
+    transform: translateY(-4px) scale(1.012);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--mint);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .card.status-pending::before { background: linear-gradient(90deg, var(--pink), var(--lavender)); }
+  .card.status-wip::before     { background: linear-gradient(90deg, #ffd77a, #ffb347); }
+  .card.status-done::before    { background: linear-gradient(90deg, var(--mint), var(--mint-dark)); }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.9rem;
+    gap: 0.5rem;
+  }
+
+  .card-platform {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-light);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .badge-headshot { background: #ffe0ee; color: #b03060; }
+  .badge-bust     { background: #e0e8ff; color: #3050b0; }
+  .badge-halfbody { background: #fff0e0; color: #b06020; }
+  .badge-fullbody { background: #e0fff0; color: #208050; }
+  .badge-other    { background: #f5f0ff; color: #6040b0; }
+
+  .card-client {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+  }
+
+  .card-desc {
+    font-size: 0.88rem;
+    color: var(--text-light);
+    margin-bottom: 0.9rem;
+    line-height: 1.5;
+    min-height: 2.5em;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+  }
+
+  .meta-chip {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.18rem 0.6rem;
+    border-radius: 999px;
+    background: var(--mint-light);
+    color: #1a5a40;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .card-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-bottom: 0.9rem;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .status-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    cursor: pointer;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .status-pending { background: #ffeef5; color: #c03070; border: 2px solid #ffb3c6; }
+  .status-wip     { background: #fff8e0; color: #a07010; border: 2px solid #ffd77a; }
+  .status-done    { background: #e8fff4; color: #156040; border: 2px solid #a8e6cf; }
+
+  /* ADD FORM */
+  .add-form-wrap {
+    padding: 0 2.5rem 2rem;
+  }
+
+  .add-form {
+    background: white;
+    border-radius: 20px;
+    padding: 1.8rem;
+    box-shadow: var(--shadow);
+    border: 2px dashed var(--mint);
+    display: none;
+    animation: cardIn 0.3s ease both;
+  }
+
+  .add-form.open { display: block; }
+
+  .form-title {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--mint-dark);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .field label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--mint-dark);
+  }
+
+  .field input, .field select, .field textarea {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 0.9rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--soft-bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--mint-dark);
+    box-shadow: 0 0 0 3px rgba(92,184,138,0.12);
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 70px;
+    border-radius: 12px;
+  }
+
+  .field-full { grid-column: 1 / -1; }
+
+  .form-actions { display: flex; gap: 0.7rem; justify-content: flex-end; margin-top: 0.5rem; }
+
+  .btn-cancel {
+    background: #f0f0f0;
+    color: #666;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.45rem 1.2rem;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-light);
+  }
+
+  .empty-state .emoji { font-size: 3rem; margin-bottom: 1rem; display: block; }
+  .empty-state p { font-size: 1rem; font-weight: 600; }
+
+  .deadline-chip {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.18rem 0.6rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .deadline-ok      { background: #e8fff4; color: #156040; }
+  .deadline-soon    { background: #fff8e0; color: #a07010; }
+  .deadline-overdue { background: #ffe8ee; color: #c03050; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.6} }
+
+  @media (max-width: 600px) {
+    header, .controls, .grid, .add-form-wrap { padding-left: 1rem; padding-right: 1rem; }
+    .grid { grid-template-columns: 1fr; }
+    .header-title { font-size: 1.4rem; }
+  }
+
+  .card-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+  .card-ref {
+    width: calc(50% - 0.2rem);
+    aspect-ratio: 1;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid var(--mint-light);
+    cursor: pointer;
+    transition: transform 0.18s;
+    flex-shrink: 0;
+  }
+  .card-gallery.single .card-ref {
+    width: 100%;
+    aspect-ratio: unset;
+    max-height: 160px;
+  }
+  .card-ref:hover { transform: scale(1.03); }
+  .ref-thumb {
+    position: relative;
+    display: inline-block;
+  }
+  .ref-thumb img {
+    width: 80px; height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--mint);
+  }
+  .ref-thumb-remove {
+    position: absolute;
+    top: -6px; right: -6px;
+    background: #e05070;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px; height: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.82);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+  .lightbox-close { position: absolute; top: 1rem; right: 1.5rem; color: white; font-size: 2rem; cursor: pointer; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title"><span>🐉</span> Commission Tracker</div>
+  <div class="header-stats">
+    <div class="stat-pill" id="stat-total">📋 0 total</div>
+    <div class="stat-pill" id="stat-pending">⏳ 0 pending</div>
+    <div class="stat-pill" id="stat-wip">🎨 0 WIP</div>
+    <div class="stat-pill" id="stat-done">✅ 0 done</div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="filter-group">
+    <span class="filter-label">🔍 Search</span>
+    <input type="text" id="search" placeholder="client, opis..." style="width:170px; border-radius:12px;">
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Typ</span>
+    <select id="filter-type">
+      <option value="">wszystkie</option>
+      <option value="headshot">Headshot</option>
+      <option value="bust">Bust</option>
+      <option value="halfbody">Halfbody</option>
+      <option value="fullbody">Fullbody</option>
+      <option value="other">Inne</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Status</span>
+    <select id="filter-status">
+      <option value="">wszystkie</option>
+      <option value="pending">Pending</option>
+      <option value="wip">WIP</option>
+      <option value="done">Done</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Od</span>
+    <input type="date" id="filter-from">
+    <span class="filter-label">Do</span>
+    <input type="date" id="filter-to">
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Sort</span>
+    <select id="sort-by">
+      <option value="date-desc">Najnowsze</option>
+      <option value="date-asc">Najstarsze</option>
+      <option value="status">Status</option>
+    </select>
+  </div>
+  <button class="btn btn-primary ml-auto" onclick="toggleForm()">＋ Nowy request</button>
+</div>
+
+<div class="add-form-wrap">
+  <div class="add-form" id="add-form">
+    <div class="form-title">✏️ Dodaj request</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>📅 Data przyjęcia</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="field">
+        <label>👤 Klient</label>
+        <input type="text" id="f-client" placeholder="nick klienta">
+      </div>
+      <div class="field">
+        <label>🌐 Platforma</label>
+        <input type="text" id="f-platform" placeholder="Twitter, DA, Telegram...">
+      </div>
+      <div class="field">
+        <label>🎨 Typ</label>
+        <select id="f-type">
+          <option value="headshot">Headshot</option>
+          <option value="bust">Bust</option>
+          <option value="halfbody">Halfbody</option>
+          <option value="fullbody">Fullbody</option>
+          <option value="other">Inne</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>🐾 Liczba OC</label>
+        <input type="number" id="f-oc" min="1" max="20" value="1" placeholder="1">
+      </div>
+      <div class="field">
+        <label>⏰ Deadline</label>
+        <input type="date" id="f-deadline">
+      </div>
+      <div class="field">
+        <label>📊 Status</label>
+        <select id="f-status">
+          <option value="pending">Pending</option>
+          <option value="wip">WIP</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="field field-full">
+        <label>📝 Opis requestu</label>
+        <textarea id="f-desc" placeholder="co dokładnie, szczegóły, notatki..."></textarea>
+      </div>
+      <div class="field field-full">
+        <label>🖼️ Ref sheety (opcjonalnie, można kilka)</label>
+        <input type="file" id="f-ref" accept="image/*" multiple style="padding:0.4rem; cursor:pointer;" onchange="previewRefs(this)">
+        <div id="f-ref-preview" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.5rem;"></div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="toggleForm()">Anuluj</button>
+      <button class="btn btn-primary" onclick="addRequest()">💾 Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<div class="grid" id="grid">
+  <div class="empty-state">
+    <span class="emoji">🐉</span>
+    <p>Brak requestów. Dodaj pierwszy!</p>
+  </div>
+</div>
+
+<script>
+  // IndexedDB setup
+  const DB_NAME = 'minty-commissions';
+  const DB_VERSION = 1;
+  const STORE = 'requests';
+  let db = null;
+  let requests = [];
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = e => {
+        const d = e.target.result;
+        if (!d.objectStoreNames.contains(STORE)) {
+          d.createObjectStore(STORE, { keyPath: 'id' });
+        }
+      };
+      req.onsuccess = e => { db = e.target.result; resolve(db); };
+      req.onerror = e => reject(e);
+    });
+  }
+
+  function loadAll() {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, 'readonly');
+      const req = tx.objectStore(STORE).getAll();
+      req.onsuccess = e => resolve(e.target.result);
+      req.onerror = e => reject(e);
+    });
+  }
+
+  function saveOne(r) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, 'readwrite');
+      const req = tx.objectStore(STORE).put(r);
+      req.onsuccess = () => resolve();
+      req.onerror = e => reject(e);
+    });
+  }
+
+  function deleteOne(id) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, 'readwrite');
+      const req = tx.objectStore(STORE).delete(id);
+      req.onsuccess = () => resolve();
+      req.onerror = e => reject(e);
+    });
+  }
+
+  async function init() {
+    await openDB();
+    requests = await loadAll();
+    render();
+  }
+
+  function toggleForm() {
+    const f = document.getElementById('add-form');
+    f.classList.toggle('open');
+    if (f.classList.contains('open')) {
+      document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('f-client').focus();
+    }
+  }
+
+  async function addRequest() {
+    const date     = document.getElementById('f-date').value;
+    const client   = document.getElementById('f-client').value.trim();
+    const platform = document.getElementById('f-platform').value.trim();
+    const type     = document.getElementById('f-type').value;
+    const oc       = parseInt(document.getElementById('f-oc').value) || 1;
+    const status   = document.getElementById('f-status').value;
+    const desc     = document.getElementById('f-desc').value.trim();
+    const refs     = pendingRefs.filter(Boolean);
+    const deadline = document.getElementById('f-deadline').value || null;
+
+    if (!client) { document.getElementById('f-client').focus(); return; }
+
+    const r = { id: Date.now(), date, client, platform, type, oc, status, desc, refs, deadline };
+    await saveOne(r);
+    requests.push(r);
+    render();
+    toggleForm();
+    ['f-client','f-platform','f-desc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-oc').value = 1;
+    document.getElementById('f-status').value = 'pending';
+    document.getElementById('f-deadline').value = '';
+    clearRef();
+  }
+
+  async function deleteRequest(id) {
+    if (!confirm('Usunąć ten request?')) return;
+    await deleteOne(id);
+    requests = requests.filter(r => r.id !== id);
+    render();
+  }
+
+  async function cycleStatus(id) {
+    const order = ['pending','wip','done'];
+    const r = requests.find(r => r.id === id);
+    if (!r) return;
+    r.status = order[(order.indexOf(r.status) + 1) % order.length];
+    await saveOne(r);
+    render();
+  }
+
+  function statusLabel(s) {
+    return { pending: '⏳ Pending', wip: '🎨 WIP', done: '✅ Done' }[s] || s;
+  }
+
+  function typeLabel(t) {
+    return { headshot: 'Headshot', bust: 'Bust', halfbody: 'Halfbody', fullbody: 'Fullbody', other: 'Inne' }[t] || t;
+  }
+
+  let pendingRefs = [];
+
+  function previewRefs(input) {
+    const files = Array.from(input.files);
+    const preview = document.getElementById('f-ref-preview');
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        pendingRefs.push(e.target.result);
+        const idx = pendingRefs.length - 1;
+        const wrap = document.createElement('div');
+        wrap.className = 'ref-thumb';
+        wrap.dataset.idx = idx;
+        wrap.innerHTML = `<img src="${e.target.result}"><button class="ref-thumb-remove" onclick="removeRef(${idx})">✕</button>`;
+        preview.appendChild(wrap);
+      };
+      reader.readAsDataURL(file);
+    });
+    input.value = '';
+  }
+
+  function removeRef(idx) {
+    pendingRefs[idx] = null;
+    const preview = document.getElementById('f-ref-preview');
+    const thumb = preview.querySelector(`[data-idx="${idx}"]`);
+    if (thumb) thumb.remove();
+  }
+
+  function clearRef() {
+    pendingRefs = [];
+    document.getElementById('f-ref').value = '';
+    document.getElementById('f-ref-preview').innerHTML = '';
+  }
+
+  let lightboxImages = [];
+  let lightboxIdx = 0;
+
+  function openLightbox(id, idx) {
+    const r = requests.find(r => r.id === id);
+    if (!r || !r.refs || !r.refs.length) return;
+    lightboxImages = r.refs;
+    lightboxIdx = idx || 0;
+    showLightboxImg();
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  function showLightboxImg() {
+    document.getElementById('lightbox-img').src = lightboxImages[lightboxIdx];
+    document.getElementById('lb-counter').textContent = lightboxImages.length > 1 ? `${lightboxIdx+1} / ${lightboxImages.length}` : '';
+  }
+
+  function lightboxNav(dir) {
+    lightboxIdx = (lightboxIdx + dir + lightboxImages.length) % lightboxImages.length;
+    showLightboxImg();
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+
+  function render() {
+    const search = document.getElementById('search').value.toLowerCase();
+    const ft     = document.getElementById('filter-type').value;
+    const fs     = document.getElementById('filter-status').value;
+    const from   = document.getElementById('filter-from').value;
+    const to     = document.getElementById('filter-to').value;
+    const sort   = document.getElementById('sort-by').value;
+
+    let data = requests.filter(r => {
+      if (search && !r.client.toLowerCase().includes(search) && !r.desc.toLowerCase().includes(search) && !r.platform.toLowerCase().includes(search)) return false;
+      if (ft && r.type !== ft) return false;
+      if (fs && r.status !== fs) return false;
+      if (from && r.date < from) return false;
+      if (to && r.date > to) return false;
+      return true;
+    });
+
+    if (sort === 'date-asc') data.sort((a,b) => a.date.localeCompare(b.date));
+    else if (sort === 'date-desc') data.sort((a,b) => b.date.localeCompare(a.date));
+    else if (sort === 'status') data.sort((a,b) => ['pending','wip','done'].indexOf(a.status) - ['pending','wip','done'].indexOf(b.status));
+
+    document.getElementById('stat-total').textContent   = `📋 ${requests.length} total`;
+    document.getElementById('stat-pending').textContent = `⏳ ${requests.filter(r=>r.status==='pending').length} pending`;
+    document.getElementById('stat-wip').textContent     = `🎨 ${requests.filter(r=>r.status==='wip').length} WIP`;
+    document.getElementById('stat-done').textContent    = `✅ ${requests.filter(r=>r.status==='done').length} done`;
+
+    const grid = document.getElementById('grid');
+    if (data.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><span class="emoji">${requests.length ? '🔍' : '🐉'}</span><p>${requests.length ? 'Nic nie pasuje do filtrów.' : 'Brak requestów. Dodaj pierwszy!'}</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = data.map(r => `
+      <div class="card status-${r.status}" style="animation-delay:${Math.random()*0.12}s">
+        <div class="card-header">
+          <span class="card-platform">${r.platform || '—'}</span>
+          <span class="badge badge-${r.type}">${typeLabel(r.type)}</span>
+        </div>
+        ${r.refs && r.refs.length ? `<div class="card-gallery${r.refs.length===1?' single':''}">` + r.refs.map((src,i) => `<img class="card-ref" src="${src}" alt="ref" onclick="openLightbox(${r.id},${i})">`).join('') + '</div>' : ''}
+        <div class="card-client">${escHtml(r.client)}</div>
+        <div class="card-desc">${escHtml(r.desc) || '<i style="opacity:.4">brak opisu</i>'}</div>
+        <div class="card-meta">
+          <span class="meta-chip">🐾 ${r.oc} OC</span>
+          ${r.deadline && r.status !== 'done' ? `<span class="deadline-chip ${deadlineClass(r.deadline)}">${deadlineLabel(r.deadline)}</span>` : ''}
+          ${r.deadline && r.status === 'done' ? `<span class="deadline-chip deadline-ok">✅ ${formatDate(r.deadline)}</span>` : ''}
+        </div>
+        <div class="card-date">📅 ${formatDate(r.date)}</div>
+        <div class="card-actions">
+          <button class="status-badge status-${r.status}" onclick="cycleStatus(${r.id})" title="Kliknij aby zmienić status">${statusLabel(r.status)}</button>
+          <button class="btn btn-edit" onclick="openEdit(${r.id})">✏️</button>
+          <button class="btn btn-danger" onclick="deleteRequest(${r.id})">🗑</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function escHtml(t) {
+    return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function formatDate(d) {
+    if (!d) return '—';
+    const [y,m,day] = d.split('-');
+    return `${day}.${m}.${y}`;
+  }
+
+  ['search','filter-type','filter-status','filter-from','filter-to','sort-by']
+    .forEach(id => document.getElementById(id).addEventListener('input', render));
+
+  // --- Deadline helpers ---
+  function deadlineDays(d) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dl = new Date(d); dl.setHours(0,0,0,0);
+    return Math.round((dl - today) / 86400000);
+  }
+  function deadlineClass(d) {
+    const days = deadlineDays(d);
+    if (days < 0) return 'deadline-overdue';
+    if (days <= 2) return 'deadline-soon';
+    return 'deadline-ok';
+  }
+  function deadlineLabel(d) {
+    const days = deadlineDays(d);
+    if (days < 0)  return `🔴 Spóźniony o ${Math.abs(days)}d`;
+    if (days === 0) return '🟡 Dziś!';
+    if (days === 1) return '🟡 Jutro';
+    return `🟢 Za ${days}d (${formatDate(d)})`;
+  }
+
+  // --- Notifications ---
+  async function requestNotifPermission() {
+    if (!('Notification' in window)) return false;
+    if (Notification.permission === 'granted') return true;
+    const p = await Notification.requestPermission();
+    return p === 'granted';
+  }
+  function getOverdue() {
+    return requests.filter(r => r.status !== 'done' && r.deadline && deadlineDays(r.deadline) < 0);
+  }
+  function checkAndNotify() {
+    const overdue = getOverdue();
+    if (!overdue.length || Notification.permission !== 'granted') return;
+    const today = new Date().toISOString().split('T')[0];
+    if (localStorage.getItem('minty-notif-last') === today) return;
+    localStorage.setItem('minty-notif-last', today);
+    overdue.forEach(r => {
+      const days = Math.abs(deadlineDays(r.deadline));
+      new Notification('🐉 Zaległy request!', {
+        body: `${r.client} (${r.type}) — spóźniony o ${days} ${days===1?'dzień':'dni'}`,
+        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🐉</text></svg>'
+      });
+    });
+  }
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      console.log('SW registered');
+      // Request periodic background sync (Chrome only)
+      if ('periodicSync' in reg) {
+        reg.periodicSync.register('check-deadlines', { minInterval: 24 * 60 * 60 * 1000 })
+          .catch(e => console.log('Periodic sync not available'));
+      }
+    }).catch(e => console.error('SW error:', e));
+  }
+
+  async function initNotifications() {
+    await requestNotifPermission();
+    checkAndNotify();
+    setInterval(checkAndNotify, 60 * 60 * 1000);
+  }
+
+  let editId = null;
+  let editRefs = [];
+
+  function openEdit(id) {
+    const r = requests.find(r => r.id === id);
+    if (!r) return;
+    editId = id;
+    editRefs = r.refs ? [...r.refs] : [];
+
+    document.getElementById('e-date').value     = r.date || '';
+    document.getElementById('e-client').value   = r.client || '';
+    document.getElementById('e-platform').value = r.platform || '';
+    document.getElementById('e-type').value     = r.type || 'headshot';
+    document.getElementById('e-oc').value       = r.oc || 1;
+    document.getElementById('e-status').value   = r.status || 'pending';
+    document.getElementById('e-desc').value     = r.desc || '';
+    document.getElementById('e-deadline').value  = r.deadline || '';
+
+    // render existing refs
+    const preview = document.getElementById('e-ref-preview');
+    preview.innerHTML = '';
+    editRefs.forEach((src, i) => {
+      if (!src) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'ref-thumb';
+      wrap.dataset.idx = i;
+      wrap.innerHTML = `<img src="${src}"><button class="ref-thumb-remove" onclick="editRemoveRef(${i})">✕</button>`;
+      preview.appendChild(wrap);
+    });
+
+    const modal = document.getElementById('edit-modal');
+    modal.style.display = 'flex';
+  }
+
+  function closeEdit() {
+    document.getElementById('edit-modal').style.display = 'none';
+    editId = null;
+    editRefs = [];
+    document.getElementById('e-ref-preview').innerHTML = '';
+    document.getElementById('e-ref').value = '';
+  }
+
+  function editAddRefs(input) {
+    const files = Array.from(input.files);
+    const preview = document.getElementById('e-ref-preview');
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const idx = editRefs.length;
+        editRefs.push(e.target.result);
+        const wrap = document.createElement('div');
+        wrap.className = 'ref-thumb';
+        wrap.dataset.idx = idx;
+        wrap.innerHTML = `<img src="${e.target.result}"><button class="ref-thumb-remove" onclick="editRemoveRef(${idx})">✕</button>`;
+        preview.appendChild(wrap);
+      };
+      reader.readAsDataURL(file);
+    });
+    input.value = '';
+  }
+
+  function editRemoveRef(idx) {
+    editRefs[idx] = null;
+    const preview = document.getElementById('e-ref-preview');
+    const thumb = preview.querySelector(`[data-idx="${idx}"]`);
+    if (thumb) thumb.remove();
+  }
+
+  async function saveEdit() {
+    const client = document.getElementById('e-client').value.trim();
+    if (!client) { document.getElementById('e-client').focus(); return; }
+
+    const r = requests.find(r => r.id === editId);
+    if (!r) return;
+
+    r.date     = document.getElementById('e-date').value;
+    r.client   = client;
+    r.platform = document.getElementById('e-platform').value.trim();
+    r.type     = document.getElementById('e-type').value;
+    r.oc       = parseInt(document.getElementById('e-oc').value) || 1;
+    r.status   = document.getElementById('e-status').value;
+    r.desc     = document.getElementById('e-desc').value.trim();
+    r.deadline = document.getElementById('e-deadline').value || null;
+    r.refs     = editRefs.filter(Boolean);
+
+    await saveOne(r);
+    render();
+    closeEdit();
+  }
+
+  init();
+
+  initNotifications();
+
+  document.addEventListener('keydown', e => {
+    const lb = document.getElementById('lightbox');
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') lightboxNav(1);
+    if (e.key === 'ArrowLeft') lightboxNav(-1);
+  });
+</script>
+
+<!-- Edit Modal -->
+<div id="edit-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; padding:1rem;">
+  <div style="background:white; border-radius:20px; padding:1.8rem; width:100%; max-width:600px; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.2);">
+    <div class="form-title">✏️ Edytuj request</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>📅 Data przyjęcia</label>
+        <input type="date" id="e-date">
+      </div>
+      <div class="field">
+        <label>👤 Klient</label>
+        <input type="text" id="e-client" placeholder="nick klienta">
+      </div>
+      <div class="field">
+        <label>🌐 Platforma</label>
+        <input type="text" id="e-platform" placeholder="Twitter, DA, Telegram...">
+      </div>
+      <div class="field">
+        <label>🎨 Typ</label>
+        <select id="e-type">
+          <option value="headshot">Headshot</option>
+          <option value="bust">Bust</option>
+          <option value="halfbody">Halfbody</option>
+          <option value="fullbody">Fullbody</option>
+          <option value="other">Inne</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>🐾 Liczba OC</label>
+        <input type="number" id="e-oc" min="1" max="20" value="1">
+      </div>
+      <div class="field">
+        <label>⏰ Deadline</label>
+        <input type="date" id="e-deadline">
+      </div>
+      <div class="field">
+        <label>📊 Status</label>
+        <select id="e-status">
+          <option value="pending">Pending</option>
+          <option value="wip">WIP</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="field field-full">
+        <label>📝 Opis requestu</label>
+        <textarea id="e-desc" placeholder="co dokładnie, szczegóły, notatki..."></textarea>
+      </div>
+      <div class="field field-full">
+        <label>🖼️ Ref sheety</label>
+        <input type="file" id="e-ref" accept="image/*" multiple style="padding:0.4rem; cursor:pointer;" onchange="editAddRefs(this)">
+        <div id="e-ref-preview" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.5rem;"></div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeEdit()">Anuluj</button>
+      <button class="btn btn-primary" onclick="saveEdit()">💾 Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <button onclick="lightboxNav(-1)" style="position:absolute;left:1rem;background:rgba(255,255,255,0.15);border:none;color:white;font-size:2rem;padding:0.5rem 0.8rem;border-radius:50%;cursor:pointer;backdrop-filter:blur(4px);">‹</button>
+  <img id="lightbox-img" src="" alt="ref">
+  <button onclick="lightboxNav(1)" style="position:absolute;right:1rem;background:rgba(255,255,255,0.15);border:none;color:white;font-size:2rem;padding:0.5rem 0.8rem;border-radius:50%;cursor:pointer;backdrop-filter:blur(4px);">›</button>
+  <div id="lb-counter" style="position:absolute;bottom:1rem;color:white;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.9rem;"></div>
+</div>
+</body>
+</html>
